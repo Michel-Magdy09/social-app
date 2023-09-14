@@ -1,17 +1,17 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:socialapp/Bloc/Login_Bloc/login_cubit.dart';
 import 'package:socialapp/Screens/register_screen.dart';
+import 'package:socialapp/Shared/Network/Local/cache_helper.dart';
 
 import '../Constants/components.dart';
+import 'home_screen.dart';
 
 TextEditingController email = TextEditingController();
 TextEditingController password = TextEditingController();
 GlobalKey<FormState> formKey = GlobalKey();
-bool isLoading = false;
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -19,7 +19,17 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<LoginCubit, LoginState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is LoginSuccessState) {
+          CacheHelper.putData(key: 'uId', value: state.uId).then((value) {
+            LoginCubit.get(context).getUserOnSignIn(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          });
+        }
+      },
       builder: (context, state) {
         var loginCubit = LoginCubit.get(context);
         return Scaffold(
@@ -48,7 +58,7 @@ class LoginScreen extends StatelessWidget {
                         },
                         text: email,
                         hintText: "Email",
-                        icon: Icons.person,
+                        prefixIcon: Icons.person,
                         keyBoardType: TextInputType.emailAddress),
                     SizedBox(
                       height: 15.h,
@@ -73,61 +83,32 @@ class LoginScreen extends StatelessWidget {
                           }
                         },
                         text: password,
+                        isPasswordSeen: !loginCubit.seenPassword,
                         hintText: "Password",
-                        icon: Icons.password,
+                        prefixIcon: FontAwesomeIcons.lock,
+                        suffixIcon: loginCubit.seenPassword
+                            ? FontAwesomeIcons.eye
+                            : FontAwesomeIcons.eyeSlash,
+                        onTap: () {
+                          loginCubit.changePasswordVisibility();
+                        },
                         keyBoardType: TextInputType.text),
                     SizedBox(
                       height: 15.h,
                     ),
-                    CustomButton(
-                      buttonColor: Colors.blue,
-                      textColor: Colors.black,
-                      titleText: "Login",
-                      pressed: () async {
-                        try {
-                          if (formKey.currentState!.validate()) {
-                            isLoading = true;
-
-                            await loginCubit.signInWithEmailAndPassword();
-                            // Navigator.pushReplacement(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     settings: RouteSettings(arguments: email.text),
-                            //     builder: (context) => ChatScreen(),
-                            //   ),
-                            // );
-                          }
-                        } on FirebaseAuthException catch (exception) {
-                          if (exception.code == 'user-not-found') {
-                            Fluttertoast.showToast(
-                                msg: 'No user found for that email.',
-                                fontSize: 15,
-                                backgroundColor: Colors.red,
-                                gravity: ToastGravity.CENTER);
-                          } else if (exception.code == 'wrong-password') {
-                            Fluttertoast.showToast(
-                                msg: 'Wrong password provided for that user.',
-                                fontSize: 15,
-                                backgroundColor: Colors.red,
-                                gravity: ToastGravity.CENTER);
-                          } else {
-                            Fluttertoast.showToast(
-                                msg:
-                                    'Authentication error: ${exception.message}',
-                                fontSize: 15,
-                                backgroundColor: Colors.red,
-                                gravity: ToastGravity.CENTER);
-                          }
-                        } catch (e) {
-                          Fluttertoast.showToast(
-                              msg: 'Unexpected error: $e',
-                              fontSize: 15,
-                              backgroundColor: Colors.red,
-                              gravity: ToastGravity.CENTER);
-                        }
-                        isLoading = false;
-                      },
-                    ),
+                    state is LoginLoadingState
+                        ? const Center(child: CircularProgressIndicator())
+                        : CustomButton(
+                            buttonColor: Colors.blue,
+                            textColor: Colors.black,
+                            titleText: "Login",
+                            pressed: () async {
+                              if (formKey.currentState!.validate()) {
+                                await loginCubit.signInWithEmailAndPassword(
+                                    email: email, password: password);
+                              }
+                            },
+                          ),
                     Row(
                       children: [
                         const Text(

@@ -2,23 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomTextFormField extends StatelessWidget {
-  CustomTextFormField({
-    super.key,
-    required this.hintText,
-    required this.text,
-    required this.keyBoardType,
-    required this.icon,
-    required this.validate,
-  });
+  CustomTextFormField(
+      {super.key,
+      required this.hintText,
+      required this.text,
+      required this.keyBoardType,
+      required this.prefixIcon,
+      required this.validate,
+      this.onTap,
+      this.suffixIcon,
+      this.isPasswordSeen = false});
   String? Function(String?)? validate;
   String hintText;
   var keyBoardType;
-  var icon;
+  var prefixIcon;
   TextEditingController text;
+  var suffixIcon;
+  VoidCallback? onTap;
+  bool isPasswordSeen;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      obscureText: isPasswordSeen,
       validator: validate,
       controller: text,
       style: const TextStyle(
@@ -49,9 +55,13 @@ class CustomTextFormField extends StatelessWidget {
             borderRadius: BorderRadius.circular(10.0),
           ),
           prefixIcon: Icon(
-            icon,
+            prefixIcon,
             color: Colors.black,
             size: 20,
+          ),
+          suffixIcon: InkWell(
+            onTap: onTap,
+            child: Icon(suffixIcon),
           ),
           labelText: hintText,
           labelStyle: const TextStyle(
