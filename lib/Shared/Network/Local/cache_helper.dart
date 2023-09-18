@@ -22,3 +22,5 @@ class CacheHelper {
     return sharedPreferences.remove(key);
   }
 }
+
+// enum CacheKeys { uId ,UserDocId}

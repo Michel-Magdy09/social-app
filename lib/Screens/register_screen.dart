@@ -24,6 +24,7 @@ class RegisterScreen extends StatelessWidget {
       listener: (context, state) {
         if (state is CreateUserSuccessState) {
           CacheHelper.putData(key: 'uId', value: state.uId).then((value) {
+            RegisterCubit.get(context).getUserOnSignUp(context);
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const HomeScreen()),

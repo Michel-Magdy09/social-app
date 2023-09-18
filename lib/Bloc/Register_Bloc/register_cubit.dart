@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:socialapp/Shared/Network/Local/cache_helper.dart';
 
 import '../Home_Bloc/home_cubit.dart';
 
@@ -60,20 +61,30 @@ class RegisterCubit extends Cubit<RegisterState> {
     }
   }
 
-  void createUser(
-      {@required email,
-      @required name,
-      @required phone,
-      @required uId,
-      @required isEmailVerified}) {
+  void createUser({
+    @required email,
+    @required name,
+    @required phone,
+    @required uId,
+    @required image,
+    @required cover,
+    @required bio,
+    @required isEmailVerified,
+  }) {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
     users.add({
       'name': name,
       'phone': phone,
       'email': email,
       'uId': uId,
+      'cover':
+          "https://img.freepik.com/free-photo/happy-mixed-race-woman-has-cheerful-expression-points-away-with-both-fore-fingers-says-follow-there-shows-direction-copy-space-wears-denim-clothes-white-hijab-isolated-purple-wall_273609-26320.jpg?w=1380&t=st=1694697732~exp=1694698332~hmac=c50a0301c2dbdff7b1d73ae8cd7760cdcde6fb484c61132aaf5ad802422079ab",
+      'image':
+          "https://campussafetyconference.com/wp-content/uploads/2020/08/iStock-476085198.jpg",
+      'bio': "write your bio....",
       'isEmailVerified': isEmailVerified
     }).then((value) {
+      CacheHelper.putData(key: 'UserDocId', value: value.id);
       emit(CreateUserSuccessState(uId));
     }).catchError((error) {
       print(error.toString());

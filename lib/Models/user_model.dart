@@ -5,6 +5,9 @@ class UserModel {
   String phone;
   String email;
   String uId;
+  String image;
+  String cover;
+  String bio;
   bool isEmailVerified;
 
   UserModel({
@@ -12,6 +15,9 @@ class UserModel {
     required this.phone,
     required this.email,
     required this.uId,
+    required this.image,
+    required this.cover,
+    required this.bio,
     required this.isEmailVerified,
   });
 
@@ -21,6 +27,9 @@ class UserModel {
       name: jsonData['name'],
       phone: jsonData['phone'],
       uId: jsonData['uId'],
+      image: jsonData['image'],
+      cover: jsonData['cover'],
+      bio: jsonData['bio'],
       isEmailVerified: jsonData['isEmailVerified'],
     );
   }
@@ -31,6 +40,9 @@ class UserModel {
       'name': name,
       'phone': phone,
       'uId': uId,
+      'image': image,
+      'cover': cover,
+      'bio': bio,
       'isEmailVerified': isEmailVerified
     };
   }
@@ -43,6 +55,9 @@ class UserModel {
         phone: data?["phone"],
         email: data?["email"],
         uId: data?["uId"],
+        image: data?["image"],
+        cover: data?["cover"],
+        bio: data?["bio"],
         isEmailVerified: data?["isEmailVerified"]);
   }
 }
