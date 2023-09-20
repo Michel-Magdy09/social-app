@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:socialapp/Bloc/Login_Bloc/login_cubit.dart';
 import 'package:socialapp/Screens/register_screen.dart';
-import 'package:socialapp/Shared/Network/Local/cache_helper.dart';
 
 import '../Constants/components.dart';
 import 'home_screen.dart';
@@ -21,13 +20,11 @@ class LoginScreen extends StatelessWidget {
     return BlocConsumer<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state is LoginSuccessState) {
-          CacheHelper.putData(key: 'uId', value: state.uId).then((value) {
-            LoginCubit.get(context).getUserOnSignIn(context);
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-            );
-          });
+          LoginCubit.get(context).getUserOnSignIn(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
         }
       },
       builder: (context, state) {

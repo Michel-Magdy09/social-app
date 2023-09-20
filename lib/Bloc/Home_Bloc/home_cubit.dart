@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:socialapp/Screens/chat_screens.dart';
@@ -21,11 +21,12 @@ class HomeCubit extends Cubit<HomeState> {
 
   static HomeCubit get(context) => BlocProvider.of(context);
   UserModel? userModel;
-  void getUserData() {
+
+  void getUserData() async {
     emit(GetUserDataLoadingState());
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('users')
-        .where("uId", isEqualTo: CacheHelper.getData(key: 'uId'))
+        .where("uId", isEqualTo: CacheHelper.getData(key: 'UserDocId'))
         .get()
         .then((value) {
       userModel = value.docs.map((e) => UserModel.fromSnapshot(e)).single;
@@ -50,6 +51,7 @@ class HomeCubit extends Cubit<HomeState> {
     SettingsScreen()
   ];
   List<String> title = ["Home", "Chat", "Add Post", " Users", "Settings"];
+
   void changeBottomNavIndex(index) {
     if (index == 2) {
       emit(AddPostIndexState());
@@ -60,6 +62,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   var profileImage;
+
   Future PickProfileImageFromGallery() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -74,6 +77,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   var coverImage;
+
   Future PickCoverImageImageFromGallery() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -89,6 +93,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   UploadTask? uploadProfileImageTask;
   String profileImageUrl = '';
+
   void uploadProfileImage({
     required String name,
     required String phone,
@@ -111,6 +116,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   UploadTask? uploadCoverImageTask;
   String coverImageUrl = '';
+
   void uploadCoverImage({
     required String name,
     required String phone,
@@ -132,25 +138,6 @@ class HomeCubit extends Cubit<HomeState> {
     });
   }
 
-  // Future<void> updateUserImages({
-  //   required String name,
-  //   required String phone,
-  //   required String bio,
-  // }) async {
-  //   //name,phone,bio,cover,profile
-  //   emit(UpdateUserDataLoadingState());
-  //   if (profileImage != null && coverImage != null) {
-  //     uploadCoverImage();
-  //     uploadProfileImage();
-  //   } else if (profileImage != null) {
-  //     uploadProfileImage();
-  //   } else if (coverImage != null) {
-  //     uploadCoverImage();
-  //   } else {
-  //     updateUserInfo(name: name, phone: phone, bio: bio);
-  //   }
-  // }
-
   Future<void> updateUserInfo(
       {required String name,
       required String phone,
@@ -171,6 +158,102 @@ class HomeCubit extends Cubit<HomeState> {
       getUserData();
     }).catchError((error) {
       emit(UpdateUserDataErrorState());
+    });
+  }
+
+////////create new post
+  var postImage;
+
+  Future pickPostImageFromGallery() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      postImage = File(pickedFile.path);
+      emit(PostImagePickedSuccessState());
+    } else {
+      print("No Post image selected");
+      emit(PostImagePickedErrorState());
+    }
+  }
+
+  void removePostImage() {
+    postImage = null;
+    emit(RemovePostImageState());
+  }
+
+  UploadTask? uploadPostImageTask;
+  String postImageUrl = '';
+
+  void uploadPostImage({
+    required String dateTime,
+    required String postText,
+  }) async {
+    emit(CreatePostLoadingState());
+    final path = 'posts/${Uri.file(postImage.path).pathSegments.last}';
+    final file = File(postImage.path);
+    final ref = FirebaseStorage.instance.ref().child(path);
+    uploadPostImageTask = ref.putFile(file);
+    await uploadPostImageTask?.whenComplete(() async {
+      postImageUrl = await ref.getDownloadURL();
+      createNewPost(
+        dateTime: dateTime,
+        postText: postText,
+        postImage: postImageUrl,
+      );
+    }).catchError((error) {
+      print("UploadProfileImageErrorState :$error");
+      emit(CreatePostErrorState());
+    });
+  }
+
+  void createNewPost({
+    required String dateTime,
+    required String postText,
+    String? postImage,
+  }) {
+    emit(CreatePostLoadingState());
+    CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+    posts.add({
+      'userName': userModel?.name,
+      'uId': userModel?.uId,
+      'userImage': userModel?.image,
+      'dateTime': dateTime,
+      'text': postText,
+      'postImage': postImage ?? '',
+    }).then((value) {
+      emit(CreatePostSuccessState());
+    }).catchError((error) {
+      print("CreatePostErrorState" + error.toString());
+      emit(CreatePostErrorState());
+    });
+  }
+
+  // List<PostModel> postsList = [];
+  // final posts = FirebaseFirestore.instance.collection('posts');
+  // void getPosts() {
+  //   emit(GetAllPostsLoadingState());
+  //   posts.get().then((value) {
+  //     value.docs.forEach((element) {
+  //       print("Posts: ${element.data()}");
+  //       postsList.add(PostModel.fromJson(element.data()));
+  //     });
+  //     emit(GetAllPostsSuccessState());
+  //   }).catchError((error) {
+  //     emit(GetAllPostsErrorState());
+  //   });
+  // }
+
+  void likePost(String postId) {
+    FirebaseFirestore.instance
+        .collection('posts')
+        .doc(postId)
+        .collection('likes')
+        .doc(CacheHelper.getData(key: 'UserDocId'))
+        .set({'like': true}).then((value) {
+      emit(LikePostSuccessState());
+    }).catchError((error) {
+      emit(LikePostErrorState());
     });
   }
 }

@@ -18,7 +18,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   Widget startWidget;
-  var uid = CacheHelper.getData(key: 'uId');
+  var uid = CacheHelper.getData(key: 'UserDocId');
   if (uid != null) {
     startWidget = const HomeScreen();
   } else {
@@ -42,9 +42,7 @@ class MyApp extends StatelessWidget {
           BlocProvider(
             create: (context) => RegisterCubit(),
           ),
-          BlocProvider(
-            create: (context) => HomeCubit()..getUserData(),
-          ),
+          BlocProvider(create: (context) => HomeCubit()..getUserData()),
         ],
         child: ScreenUtilInit(
             designSize: const Size(360, 690),

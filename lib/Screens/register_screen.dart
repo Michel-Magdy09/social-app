@@ -5,7 +5,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:socialapp/Bloc/Register_Bloc/register_cubit.dart';
 
 import '../Constants/components.dart';
-import '../Shared/Network/Local/cache_helper.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
 
@@ -23,13 +22,11 @@ class RegisterScreen extends StatelessWidget {
     return BlocConsumer<RegisterCubit, RegisterState>(
       listener: (context, state) {
         if (state is CreateUserSuccessState) {
-          CacheHelper.putData(key: 'uId', value: state.uId).then((value) {
-            RegisterCubit.get(context).getUserOnSignUp(context);
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-            );
-          });
+          RegisterCubit.get(context).getUserOnSignUp(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
         }
       },
       builder: (context, state) {
@@ -153,8 +150,6 @@ class RegisterScreen extends StatelessWidget {
                                         email: email,
                                         password: password);
                               }
-                              // setState(() {});
-                              // isLoading = false;
                             },
                           ),
                     Row(

@@ -20,7 +20,7 @@ class ChatScreen extends StatelessWidget {
               children: [
                 TextButton(
                     onPressed: () {
-                      CacheHelper.removeData(key: "uId");
+                      CacheHelper.removeData(key: "UserDocId");
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

@@ -84,8 +84,12 @@ class RegisterCubit extends Cubit<RegisterState> {
       'bio': "write your bio....",
       'isEmailVerified': isEmailVerified
     }).then((value) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(value.id)
+          .update({'uId': value.id});
       CacheHelper.putData(key: 'UserDocId', value: value.id);
-      emit(CreateUserSuccessState(uId));
+      emit(CreateUserSuccessState(value.id));
     }).catchError((error) {
       print(error.toString());
       emit(CreateUserErrorState());

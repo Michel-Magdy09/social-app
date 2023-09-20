@@ -34,3 +34,28 @@ class UploadCoverImageSuccessState extends HomeState {}
 class UpdateUserDataErrorState extends HomeState {}
 
 class UpdateUserDataLoadingState extends HomeState {}
+
+//
+//create New Post
+//////
+class PostImagePickedSuccessState extends HomeState {}
+
+class PostImagePickedErrorState extends HomeState {}
+
+class CreatePostLoadingState extends HomeState {}
+
+class CreatePostErrorState extends HomeState {}
+
+class CreatePostSuccessState extends HomeState {}
+
+class RemovePostImageState extends HomeState {}
+
+class GetAllPostsLoadingState extends HomeState {}
+
+class GetAllPostsSuccessState extends HomeState {}
+
+class GetAllPostsErrorState extends HomeState {}
+
+class LikePostSuccessState extends HomeState {}
+
+class LikePostErrorState extends HomeState {}
