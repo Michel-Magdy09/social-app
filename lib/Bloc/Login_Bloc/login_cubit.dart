@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:socialapp/Bloc/Home_Bloc/home_cubit.dart';
+import 'package:socialapp/Shared/Network/Local/cache_helper.dart';
 
 part 'login_state.dart';
 
@@ -25,6 +26,7 @@ class LoginCubit extends Cubit<LoginState> {
         password: password.text,
       )
           .then((value) {
+        CacheHelper.putData(key: 'UserDocId', value: value.user!.uid);
         emit(LoginSuccessState(uId: value.user!.uid));
         Fluttertoast.showToast(
             msg: "Welcome ${value.user!.email}!",

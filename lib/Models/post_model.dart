@@ -17,9 +17,9 @@ class PostModel {
     required this.postImage,
   });
 
-  factory PostModel.fromJson(jsonData) {
+  factory PostModel.fromJson(Map<String, dynamic> jsonData) {
     return PostModel(
-      name: jsonData['name'],
+      name: jsonData['userName'],
       text: jsonData['text'],
       postImage: jsonData['postImage'],
       dateTime: jsonData['dateTime'],

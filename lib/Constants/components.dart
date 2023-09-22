@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:socialapp/Bloc/Home_Bloc/home_cubit.dart';
 
 import '../Models/post_model.dart';
 
@@ -107,8 +108,10 @@ class CustomButton extends StatelessWidget {
 
 class PostItem extends StatelessWidget {
   PostModel model;
+  int index;
   PostItem({
     required this.model,
+    required this.index,
     super.key,
   });
   @override
@@ -144,14 +147,14 @@ class PostItem extends StatelessWidget {
                       model.dateTime,
                       style: Theme.of(context)
                           .textTheme
-                          .caption
+                          .bodySmall
                           ?.copyWith(height: 1.1.h),
                     )
                   ],
                 ),
               ),
               IconButton(
-                  onPressed: () {}, icon: Icon(FontAwesomeIcons.ellipsis))
+                  onPressed: () {}, icon: const Icon(FontAwesomeIcons.ellipsis))
             ],
           ),
           const Padding(
@@ -173,7 +176,33 @@ class PostItem extends StatelessWidget {
                   onTap: () {},
                   child: Text(
                     "#Software_developer",
-                    style: Theme.of(context).textTheme.caption?.copyWith(
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.blue,
+                          fontSize: 13.sp,
+                        ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: 5.0),
+                child: InkWell(
+                  onTap: () {},
+                  child: Text(
+                    "#Software_developer",
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.blue,
+                          fontSize: 13.sp,
+                        ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: 5.0),
+                child: InkWell(
+                  onTap: () {},
+                  child: Text(
+                    "#ig",
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.blue,
                           fontSize: 13.sp,
                         ),
@@ -193,74 +222,9 @@ class PostItem extends StatelessWidget {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsetsDirectional.only(end: 5.0),
-                child: InkWell(
-                  onTap: () {},
-                  child: Text(
-                    "#Software_developer",
-                    style: Theme.of(context).textTheme.caption?.copyWith(
-                          color: Colors.blue,
-                          fontSize: 13.sp,
-                        ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsetsDirectional.only(end: 5.0),
-                child: InkWell(
-                  onTap: () {},
-                  child: Text(
-                    "#Software_developer",
-                    style: Theme.of(context).textTheme.caption?.copyWith(
-                          color: Colors.blue,
-                          fontSize: 13.sp,
-                        ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsetsDirectional.only(end: 5.0),
-                child: InkWell(
-                  onTap: () {},
-                  child: Text(
-                    "#Software_developer",
-                    style: Theme.of(context).textTheme.caption?.copyWith(
-                          color: Colors.blue,
-                          fontSize: 13.sp,
-                        ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsetsDirectional.only(end: 5.0),
-                child: InkWell(
-                  onTap: () {},
-                  child: Text(
-                    "#Hello_world",
-                    style: Theme.of(context).textTheme.caption?.copyWith(
-                          color: Colors.blue,
-                          fontSize: 13.sp,
-                        ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsetsDirectional.only(end: 5.0),
-                child: InkWell(
-                  onTap: () {},
-                  child: Text(
-                    "#IG",
-                    style: Theme.of(context).textTheme.caption?.copyWith(
-                          color: Colors.blue,
-                          fontSize: 13.sp,
-                        ),
-                  ),
-                ),
-              ),
             ],
           ),
-          if (model.postImage != null)
+          if (model.postImage != '')
             Image.network(
                 fit: BoxFit.cover,
                 height: 200.h,
@@ -277,7 +241,7 @@ class PostItem extends StatelessWidget {
                   children: [
                     Icon(FontAwesomeIcons.heart, size: 18.r),
                     SizedBox(width: 7.w),
-                    Text("1000"),
+                    Text(HomeCubit.get(context).likesList[index].toString()),
                   ],
                 ),
               ),
@@ -301,16 +265,29 @@ class PostItem extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 17.r,
-                backgroundImage: const NetworkImage(
-                    "https://img.freepik.com/free-photo/happy-attractive-woman-dancing-having-fun-raising-hands-up-carefree-enjoying-music-standing-against-white-wall_176420-38816.jpg?w=1380&t=st=1694698504~exp=1694699104~hmac=3da34ab33024edfc22197bd985ad713e15bdea4af3e4c30fc53a32502a5a1414"),
+                backgroundImage:
+                    NetworkImage(HomeCubit.get(context).userModel!.image),
               ),
               SizedBox(
                 width: 3.w,
               ),
-              const Text("Write Comment ..."),
+              Expanded(
+                child: TextFormField(
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10.sp),
+                  keyboardType: TextInputType.text,
+                  cursorColor: Colors.black,
+                  decoration: const InputDecoration(hintText: "hello"),
+                ),
+              ),
               Spacer(),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  HomeCubit.get(context).likePost(
+                      HomeCubit.get(context).postsIds[index].toString());
+                },
                 child: Row(
                   children: [
                     Icon(FontAwesomeIcons.heart, size: 18.r),

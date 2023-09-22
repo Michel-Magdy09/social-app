@@ -11,6 +11,7 @@ import 'package:socialapp/Screens/new_post_screen.dart';
 import 'package:socialapp/Screens/settings_screen.dart';
 import 'package:socialapp/Screens/users_screen.dart';
 
+import '../../Models/post_model.dart';
 import '../../Models/user_model.dart';
 import '../../Shared/Network/Local/cache_helper.dart';
 
@@ -214,42 +215,60 @@ class HomeCubit extends Cubit<HomeState> {
   }) {
     emit(CreatePostLoadingState());
     CollectionReference posts = FirebaseFirestore.instance.collection('posts');
-    posts.add({
+    final newPost = {
       'userName': userModel?.name,
       'uId': userModel?.uId,
       'userImage': userModel?.image,
       'dateTime': dateTime,
       'text': postText,
       'postImage': postImage ?? '',
-    }).then((value) {
+    };
+    posts.add(newPost).then((value) {
+      postsList.add(PostModel.fromJson(newPost));
       emit(CreatePostSuccessState());
     }).catchError((error) {
-      print("CreatePostErrorState" + error.toString());
+      print("CreatePostErrorState: $error");
       emit(CreatePostErrorState());
     });
   }
 
-  // List<PostModel> postsList = [];
-  // final posts = FirebaseFirestore.instance.collection('posts');
-  // void getPosts() {
-  //   emit(GetAllPostsLoadingState());
-  //   posts.get().then((value) {
-  //     value.docs.forEach((element) {
-  //       print("Posts: ${element.data()}");
-  //       postsList.add(PostModel.fromJson(element.data()));
-  //     });
-  //     emit(GetAllPostsSuccessState());
-  //   }).catchError((error) {
-  //     emit(GetAllPostsErrorState());
-  //   });
-  // }
+  List<PostModel> postsList = [];
+  List<String> postsIds = [];
+  List<int> likesList = [];
+  final posts = FirebaseFirestore.instance.collection('posts');
+  void getPosts() async {
+    emit(GetAllPostsLoadingState());
+    await posts.get().then((value) {
+      value.docs.forEach((element) {
+        element.reference.collection('likes').get().then((value) {
+          likesList.add(value.docs.length);
+          postsIds.add(element.id);
+          postsList.add(PostModel.fromJson(element.data()));
+          emit(GetAllPostsSuccessState());
+        }).catchError((error) {
+          emit(GetAllPostsErrorState());
+        });
+      });
+    }).catchError((error) {
+      emit(GetAllPostsErrorState());
+    });
+  }
+
+  void getLikes() {
+    posts.get().then((value) {
+      value.docs.forEach((element) {});
+      emit(GetAllPostsSuccessState());
+    }).catchError((error) {
+      emit(GetAllPostsErrorState());
+    });
+  }
 
   void likePost(String postId) {
     FirebaseFirestore.instance
         .collection('posts')
         .doc(postId)
         .collection('likes')
-        .doc(CacheHelper.getData(key: 'UserDocId'))
+        .doc(userModel?.uId)
         .set({'like': true}).then((value) {
       emit(LikePostSuccessState());
     }).catchError((error) {

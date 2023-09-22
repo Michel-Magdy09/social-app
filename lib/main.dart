@@ -42,7 +42,10 @@ class MyApp extends StatelessWidget {
           BlocProvider(
             create: (context) => RegisterCubit(),
           ),
-          BlocProvider(create: (context) => HomeCubit()..getUserData()),
+          BlocProvider(
+              create: (context) => HomeCubit()
+                ..getUserData()
+                ..getPosts()),
         ],
         child: ScreenUtilInit(
             designSize: const Size(360, 690),
