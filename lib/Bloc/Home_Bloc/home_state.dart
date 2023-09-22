@@ -11,6 +11,12 @@ class GetUserDataSuccessState extends HomeState {}
 
 class GetUserDataErrorState extends HomeState {}
 
+class GetAllUsersDataLoadingState extends HomeState {}
+
+class GetAllUsersDataSuccessState extends HomeState {}
+
+class GetAllUsersDataErrorState extends HomeState {}
+
 class ChangeBottomNavIndexState extends HomeState {}
 
 class AddPostIndexState extends HomeState {}
@@ -59,3 +65,12 @@ class GetAllPostsErrorState extends HomeState {}
 class LikePostSuccessState extends HomeState {}
 
 class LikePostErrorState extends HomeState {}
+
+//chats
+class SendMessagesSuccessState extends HomeState {}
+
+class SendMessagesErrorState extends HomeState {}
+
+class GetMessagesErrorState extends HomeState {}
+
+class GetMessagesSuccessState extends HomeState {}

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:socialapp/Bloc/Home_Bloc/home_cubit.dart';
+import 'package:socialapp/Models/message_model.dart';
+import 'package:socialapp/Screens/chat_details.dart';
 
 import '../Models/post_model.dart';
 
@@ -28,6 +30,9 @@ class CustomTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      onTapOutside: (event) {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
       obscureText: isPasswordSeen,
       validator: validate,
       controller: text,
@@ -304,60 +309,109 @@ class PostItem extends StatelessWidget {
   }
 }
 
-// class chatBubble extends StatelessWidget {
-//   const chatBubble({
-//     required this.message,
-//     super.key,
-//   });
-//
-//   final Message message;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Align(
-//       alignment: Alignment.centerRight,
-//       child: Container(
-//         padding:
-//             const EdgeInsets.only(left: 10, top: 16, right: 32, bottom: 16),
-//         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-//         decoration: const BoxDecoration(
-//           color: Colors.red,
-//           borderRadius: BorderRadius.only(
-//             bottomRight: Radius.circular(30),
-//             topLeft: Radius.circular(30),
-//             topRight: Radius.circular(30),
-//           ),
-//         ),
-//         child: Text(message.message),
-//       ),
-//     );
-//   }
-// }
-//
-// class chatBubbleWithFriend extends StatelessWidget {
-//   const chatBubbleWithFriend({
-//     required this.message,
-//     super.key,
-//   });
-//
-//   final Message message;
-//   @override
-//   Widget build(BuildContext context) {
-//     return Align(
-//       alignment: Alignment.centerLeft,
-//       child: Container(
-//         padding:
-//             const EdgeInsets.only(left: 10, top: 16, right: 32, bottom: 16),
-//         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-//         decoration: const BoxDecoration(
-//           color: Colors.blue,
-//           borderRadius: BorderRadius.only(
-//             bottomLeft: Radius.circular(30),
-//             topLeft: Radius.circular(30),
-//             topRight: Radius.circular(30),
-//           ),
-//         ),
-//         child: Text(message.message),
-//       ),
-//     );
-//   }
-// }
+class UserChat extends StatelessWidget {
+  HomeCubit homeCubit;
+  int index;
+  UserChat({
+    required this.homeCubit,
+    required this.index,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  ChatDetails(userModel: homeCubit.allUsersModel[index])),
+        );
+      },
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 25.r,
+            backgroundImage: NetworkImage(homeCubit.allUsersModel[index].image),
+          ),
+          SizedBox(
+            width: 10.w,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  homeCubit.allUsersModel[index].name,
+                  style: TextStyle(
+                      height: 1.1.h,
+                      fontSize: 17.sp,
+                      fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class FriendChatBubble extends StatelessWidget {
+  MessageModel messageModel;
+  FriendChatBubble({
+    required this.messageModel,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding:
+            const EdgeInsets.only(left: 10, top: 16, right: 32, bottom: 16),
+        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+        decoration: const BoxDecoration(
+          color: Colors.green,
+          borderRadius: BorderRadius.only(
+            bottomRight: Radius.circular(30),
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        child: Text(messageModel.text.toString()),
+      ),
+    );
+  }
+}
+
+class MyChatBubble extends StatelessWidget {
+  MessageModel messageModel;
+  MyChatBubble({
+    required this.messageModel,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Container(
+        padding:
+            const EdgeInsets.only(left: 10, top: 16, right: 32, bottom: 16),
+        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+        decoration: const BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(30),
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        child: Text(messageModel.text.toString()),
+      ),
+    );
+  }
+}

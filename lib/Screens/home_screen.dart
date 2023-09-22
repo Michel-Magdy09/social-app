@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:socialapp/Bloc/Home_Bloc/home_cubit.dart';
 
+import '../Shared/Network/Local/cache_helper.dart';
+import 'login_screen.dart';
 import 'new_post_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -21,6 +23,19 @@ class HomeScreen extends StatelessWidget {
         var homeCubit = HomeCubit.get(context);
         return Scaffold(
           appBar: AppBar(actions: [
+            TextButton(
+              onPressed: () {
+                CacheHelper.removeData(key: "UserDocId");
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                );
+              },
+              child: const Text(
+                "LOGOUT",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
             IconButton(
                 onPressed: () {}, icon: const Icon(FontAwesomeIcons.bell)),
             IconButton(
@@ -52,25 +67,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
-// homeCubit.userModel != null
-// ? Column(
-// children: [
-// Text("hello ${homeCubit.userModel!.name}"),
-// const Spacer(),
-// TextButton(
-// onPressed: () {
-// CacheHelper.removeData(key: "uId");
-//
-// Navigator.pushReplacement(
-// context,
-// MaterialPageRoute(
-// builder: (context) => const LoginScreen()),
-// );
-// },
-// child: Text("LOGOUT"))
-// ],
-// )
-// : const Center(
-// child: CircularProgressIndicator(),
-// ),
